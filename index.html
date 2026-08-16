@@ -28,7 +28,7 @@
 <link href="favicon-16x16-v2.png" rel="icon" sizes="16x16" type="image/png"/>
 <link href="apple-touch-icon-v2.png" rel="apple-touch-icon" sizes="180x180"/>
 <link href="site-v2.webmanifest" rel="manifest"/>
-<meta content="#d8c7ae" name="theme-color"/>
+<meta content="#a2947e" name="theme-color"/>
 <meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
 <!--/favicons--> <!-- Assets --> <script async="" charset="utf-8" src="https://neo.tildacdn.com/js/tilda-fallback-1.0.min.js"></script> <link href="https://static.tildacdn.com/css/tilda-grid-3.0.min.css" media="all" onerror="this.loaderr='y';" rel="stylesheet" type="text/css"/> <link href="https://static.tildacdn.com/ws/project25649906/tilda-blocks-page150020086.min.css?t=1784524154" media="all" onerror="this.loaderr='y';" rel="stylesheet" type="text/css"/> <link href="https://fonts.gstatic.com" rel="preconnect"/> <link href="https://static.tildacdn.com/css/tilda-animation-2.0.min.css" media="all" onerror="this.loaderr='y';" rel="stylesheet" type="text/css"/> <link href="https://static.tildacdn.com/css/tilda-cover-1.0.min.css" media="all" onerror="this.loaderr='y';" rel="stylesheet" type="text/css"/> <link href="https://static.tildacdn.com/css/tilda-popup-1.1.min.css" media="print" onerror="this.loaderr='y';" onload="this.media='all';" rel="stylesheet" type="text/css"> <noscript><link href="https://static.tildacdn.com/css/tilda-popup-1.1.min.css" media="all" rel="stylesheet" type="text/css"/></noscript> <link href="https://static.tildacdn.com/css/tilda-slds-1.4.min.css" media="print" onerror="this.loaderr='y';" onload="this.media='all';" rel="stylesheet" type="text/css"/> <noscript><link href="https://static.tildacdn.com/css/tilda-slds-1.4.min.css" media="all" rel="stylesheet" type="text/css"/></noscript> <link href="https://static.tildacdn.com/css/tilda-zero-gallery-1.0.min.css" media="all" onerror="this.loaderr='y';" rel="stylesheet" type="text/css"/> <link href="https://static.tildacdn.com/css/tilda-forms-1.0.min.css" media="all" onerror="this.loaderr='y';" rel="stylesheet" type="text/css"/> <link href="https://static.tildacdn.com/css/tilda-zoom-2.0.min.css" media="print" onerror="this.loaderr='y';" onload="this.media='all';" rel="stylesheet" type="text/css"/> <noscript><link href="https://static.tildacdn.com/css/tilda-zoom-2.0.min.css" media="all" rel="stylesheet" type="text/css"/></noscript> <script charset="utf-8" nomodule="" src="https://static.tildacdn.com/js/tilda-polyfill-1.0.min.js"></script> <script type="text/javascript">function t_onReady(func) {if(document.readyState!='loading') {func();} else {document.addEventListener('DOMContentLoaded',func);}}
@@ -5462,21 +5462,30 @@ html body #allrecords > #rec2402456571.r,
 </style>
 
 
-<style id="dn-v106-safari-rubberband-fixed-background">
+<style id="dn-v104-mobile-background-root-fix">
 /*
-  V106 — Safari rubber-band background, based on the fixed-background +
-  positioned-content stacking technique.
+  V104 — final mobile background model.
 
-  Core idea:
-  1) #dnSiteLandscape is a real fixed element covering the viewport.
-  2) It sits at z-index:0.
-  3) #allrecords is explicitly position:relative + z-index:1.
-  4) During Safari rubber-band/overscroll the content can move, while the
-     fixed image remains behind it instead of revealing html/body colour.
+  Actual source of the visible "strip":
+  1) the page used to translate the ENTIRE fixed background layer downward;
+  2) iOS changes the visual viewport while its browser bars collapse/expand;
+  3) the root canvas could therefore become visible for a frame;
+  4) attempts to solve this with huge 100–300svh overscan changed the
+     object-fit:cover geometry and made the painting look zoomed.
 
-  No visualViewport tracking and no scroll-driven movement on mobile.
+  Fix:
+  - the viewport-covering layer NEVER moves;
+  - it remains exactly viewport-sized, so the crop stays the intended size;
+  - only the image inside gets a tiny 0–14px downward drift;
+  - a small hidden reserve around that image absorbs the drift;
+  - root/overscroll colour is matched to the top part of the painting.
 */
+
 @media screen and (max-width:767px) and (pointer:coarse){
+  :root{
+    --dn-mobile-root:#a2947e;
+  }
+
   html,
   body{
     margin:0 !important;
@@ -5484,123 +5493,153 @@ html body #allrecords > #rec2402456571.r,
     width:100% !important;
     min-width:100% !important;
     min-height:100% !important;
+    background:var(--dn-mobile-root) !important;
     overflow-x:hidden !important;
-    /* Keep Safari's native rubber-band enabled. */
-    overscroll-behavior-y:auto !important;
+    overscroll-behavior-y:none !important;
   }
 
-  /*
-    Do not use the page root as the visible background after the intro.
-    The fixed image layer below is what Safari should expose on bounce.
-  */
   body:not(.letter-intro-active){
-    background:transparent !important;
+    background:var(--dn-mobile-root) !important;
   }
 
   #dnSiteLandscape{
     position:fixed !important;
-    top:0 !important;
-    right:0 !important;
-    bottom:0 !important;
-    left:0 !important;
-    width:100% !important;
-    height:100% !important;
-    min-width:100% !important;
-    min-height:100% !important;
+
+    /* Keep the layer on the viewport itself. */
+    top:-1px !important;
+    right:-1px !important;
+    bottom:-1px !important;
+    left:-1px !important;
+
+    width:auto !important;
+    height:auto !important;
+    min-width:0 !important;
+    min-height:0 !important;
     max-width:none !important;
     max-height:none !important;
-    overflow:hidden !important;
-    pointer-events:none !important;
-    display:block !important;
-    visibility:visible !important;
-    opacity:1 !important;
-    z-index:0 !important;
-    background:#d8c7ae !important;
 
-    /* Critical: the background itself never follows page scroll. */
+    overflow:hidden !important;
+    background:var(--dn-mobile-root) !important;
+
+    /* Critical: disable the old whole-layer parallax on phones. */
     transform:none !important;
     will-change:auto !important;
+
+    --dn-mobile-bg-y:0px;
   }
 
   #dnSiteLandscape .dn-site-landscape__fill{
     position:absolute !important;
-    inset:-10px !important;
-    width:calc(100% + 20px) !important;
-    height:calc(100% + 20px) !important;
-    min-width:calc(100% + 20px) !important;
-    min-height:calc(100% + 20px) !important;
+
+    /*
+      Only 24px internal reserve. This does NOT change the viewport-sized
+      wrapper and therefore does not create the big zoom seen in V100/V101.
+    */
+    top:-24px !important;
+    right:-8px !important;
+    bottom:-24px !important;
+    left:-8px !important;
+
+    width:auto !important;
+    height:auto !important;
+    min-width:0 !important;
+    min-height:0 !important;
     max-width:none !important;
     max-height:none !important;
+
     object-fit:cover !important;
     object-position:50% 47% !important;
-    transform:scale(1.01) !important;
+
+    /* Near-original framing; only the image itself moves slightly down. */
+    transform:translate3d(0,var(--dn-mobile-bg-y,0px),0) scale(1.005) !important;
     transform-origin:center center !important;
-    will-change:auto !important;
+    will-change:transform !important;
+
     filter:saturate(.92) contrast(1.015) brightness(1.02) !important;
     opacity:.92 !important;
-    z-index:1 !important;
   }
 
   #dnSiteLandscape::after{
-    content:'' !important;
-    position:absolute !important;
     inset:0 !important;
-    z-index:2 !important;
-    pointer-events:none !important;
-    background:linear-gradient(180deg,rgba(247,242,234,.06),rgba(247,242,234,.13)) !important;
+    background:linear-gradient(
+      180deg,
+      rgba(247,242,234,.06),
+      rgba(247,242,234,.13)
+    ) !important;
   }
 
   /*
-    This is the important half of the Stack Overflow solution:
-    z-index on the content only participates correctly because the holder
-    is explicitly positioned.
+    Do not allow any Tilda page wrapper to paint its own background above
+    the global painting while Safari is resizing the visual viewport.
   */
-  #allrecords{
-    position:relative !important;
-    z-index:1 !important;
-    isolation:isolate;
-    background:transparent !important;
-  }
-
-  /* Normal transparent sections continue to show the same painting. */
-  #allrecords > .r:not(#rec2402477381):not(#rec2402454781):not(#rec2402456571):not(#rec2402443881),
-  #allrecords .t396,
-  #allrecords .t396__artboard,
-  #allrecords .t396__carrier,
-  #allrecords .t396__filter,
-  #allrecords .t-cover,
-  #allrecords .t-cover__carrier,
-  #allrecords .t-cover__filter{
+  #allrecords,
+  .t-records,
+  .t-rec:not(#rec2402454781):not(#rec2402456571):not(#rec2402443881){
     background-color:transparent !important;
-    background-image:none !important;
-  }
-
-  /* Preserve sections that intentionally have their own surfaces. */
-  #rec2402477381,
-  #rec2402477381 .dn-details{
-    background:rgba(250,246,239,.82) !important;
-  }
-
-  #rec2402454781,
-  #rec2402456571,
-  #rec2402443881{
-    position:relative !important;
-    z-index:2 !important;
   }
 }
 
+/* Same crop on narrow iPhones — deliberately no extra scale. */
 @media screen and (max-width:430px) and (pointer:coarse){
   #dnSiteLandscape .dn-site-landscape__fill{
-    inset:-10px !important;
-    width:calc(100% + 20px) !important;
-    height:calc(100% + 20px) !important;
-    transform:scale(1.01) !important;
+    top:-24px !important;
+    right:-8px !important;
+    bottom:-24px !important;
+    left:-8px !important;
+    transform:translate3d(0,var(--dn-mobile-bg-y,0px),0) scale(1.005) !important;
   }
 }
 </style>
 
-<script id="dn-v106-disable-old-mobile-background-motion">
-/* V106 intentionally has no mobile scroll/visualViewport background motion. */
+<script id="dn-v104-mobile-background-motion">
+(function(){
+  function initDnMobileBackgroundV104(){
+    if(!window.matchMedia ||
+       !window.matchMedia('(max-width:767px) and (pointer:coarse)').matches) return;
+
+    var bg=document.getElementById('dnSiteLandscape');
+    if(!bg) return;
+
+    var ticking=false;
+
+    function sync(){
+      if(ticking) return;
+      ticking=true;
+
+      requestAnimationFrame(function(){
+        ticking=false;
+
+        var y=window.pageYOffset ||
+              document.documentElement.scrollTop ||
+              document.body.scrollTop || 0;
+
+        /*
+          Preserve the requested direction: the painting drifts DOWN on scroll.
+          14px is safely smaller than the 24px internal reserve.
+        */
+        var shift=Math.min(Math.max(y*0.010,0),14);
+        bg.style.setProperty('--dn-mobile-bg-y',shift.toFixed(2)+'px');
+      });
+    }
+
+    window.addEventListener('scroll',sync,{passive:true});
+    window.addEventListener('resize',sync,{passive:true});
+    window.addEventListener('orientationchange',sync,{passive:true});
+
+    if(window.visualViewport){
+      window.visualViewport.addEventListener('resize',sync,{passive:true});
+      window.visualViewport.addEventListener('scroll',sync,{passive:true});
+    }
+
+    sync();
+  }
+
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',initDnMobileBackgroundV104,{once:true});
+  }else{
+    initDnMobileBackgroundV104();
+  }
+})();
 </script>
 
 </body> </html>
