@@ -1456,71 +1456,95 @@ button,a{touch-action:manipulation;}
 
 
 
-<style id="dn-v106-mobile-background-clean">
+<style id="dn-v107-mobile-background-single-overscan-layer">
 /*
-  V106 — mobile background rebuilt from zero.
-  No inherited mobile positioning, no parallax variables, no overscan, no visualViewport math.
-  The visible painting is one fixed viewport layer. The document root gets the same image only as
-  a Safari rubber-band fallback, so an overscroll cannot expose a different body colour.
+  V107 — one physical mobile background layer, including Safari rubber-band zones.
+  Important: html/body NEVER paint a copy of the image. The only image is #dnSiteLandscape.
 */
 @media screen and (max-width:767px){
   html{
-    margin:0 !important; padding:0 !important; width:100% !important; min-height:100% !important;
+    margin:0 !important;
+    padding:0 !important;
+    width:100% !important;
+    min-height:100% !important;
     overflow-x:hidden !important;
     overscroll-behavior-y:none !important;
-    background-color:#d8c7ae !important;
-    background-repeat:repeat-y !important;
-    background-position:center top !important;
-    background-size:100vw auto !important;
+    background:#d8c7ae !important;
+    background-image:none !important;
   }
   body, body.t-body{
-    margin:0 !important; padding:0 !important; width:100% !important; min-height:100% !important;
+    margin:0 !important;
+    padding:0 !important;
+    width:100% !important;
+    min-height:100% !important;
     overflow-x:hidden !important;
     overscroll-behavior-y:none !important;
     background:transparent !important;
+    background-image:none !important;
   }
   body.letter-intro-active{background:#c9784d !important;}
 
+  /*
+     Overscan is intentional: the SAME layer extends beyond both viewport edges.
+     No second image exists underneath it, therefore there can be no phase/crop mismatch.
+  */
   #dnSiteLandscape{
-    position:fixed !important; inset:0 !important;
-    width:100% !important; height:100% !important; min-width:0 !important; min-height:0 !important;
-    max-width:none !important; max-height:none !important;
-    margin:0 !important; padding:0 !important; overflow:hidden !important;
-    z-index:0 !important; pointer-events:none !important;
-    display:block !important; visibility:visible !important; opacity:1 !important;
-    transform:none !important; translate:none !important; will-change:auto !important;
+    position:fixed !important;
+    left:0 !important;
+    top:-32vh !important;
+    width:100vw !important;
+    height:164vh !important;
+    min-width:0 !important;
+    min-height:0 !important;
+    max-width:none !important;
+    max-height:none !important;
+    margin:0 !important;
+    padding:0 !important;
+    overflow:hidden !important;
+    z-index:0 !important;
+    pointer-events:none !important;
+    display:block !important;
+    visibility:visible !important;
+    opacity:1 !important;
+    transform:translateZ(0) !important;
+    -webkit-transform:translateZ(0) !important;
+    will-change:transform !important;
     background:#d8c7ae !important;
   }
+
   #dnSiteLandscape .dn-site-landscape__fill{
-    position:absolute !important; inset:0 !important;
-    display:block !important; width:100% !important; height:100% !important;
-    min-width:0 !important; min-height:0 !important; max-width:none !important; max-height:none !important;
-    object-fit:cover !important; object-position:50% 47% !important;
-    transform:none !important; translate:none !important; will-change:auto !important;
-    filter:saturate(.92) contrast(1.015) brightness(1.02) !important; opacity:.92 !important; z-index:1 !important;
+    position:absolute !important;
+    left:0 !important;
+    top:0 !important;
+    width:100% !important;
+    height:100% !important;
+    min-width:0 !important;
+    min-height:0 !important;
+    max-width:none !important;
+    max-height:none !important;
+    display:block !important;
+    object-fit:cover !important;
+    object-position:50% 47% !important;
+    transform:none !important;
+    -webkit-transform:none !important;
+    will-change:auto !important;
+    filter:saturate(.92) contrast(1.015) brightness(1.02) !important;
+    opacity:.92 !important;
+    z-index:1 !important;
   }
+
   #dnSiteLandscape .dn-site-landscape__img{display:none !important;}
   #dnSiteLandscape::before{content:none !important;display:none !important;}
   #dnSiteLandscape::after{
-    content:'' !important; position:absolute !important; inset:0 !important; z-index:2 !important;
+    content:'' !important;
+    position:absolute !important;
+    inset:0 !important;
+    z-index:2 !important;
     pointer-events:none !important;
     background:linear-gradient(180deg,rgba(247,242,234,.06),rgba(247,242,234,.13)) !important;
   }
 }
 </style>
-<script id="dn-v106-mobile-root-fallback">
-(function(){
-  function syncRoot(){
-    if(!window.matchMedia || !window.matchMedia('(max-width:767px)').matches) return;
-    var img=document.querySelector('#dnSiteLandscape .dn-site-landscape__fill');
-    if(!img || !img.src) return;
-    var root=document.documentElement;
-    root.style.setProperty('background-image','url("'+img.src.replace(/"/g,'\\"')+'")','important');
-  }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',syncRoot,{once:true});
-  else syncRoot();
-})();
-</script>
 
 </head> <body class="t-body letter-intro-active" style="margin:0;">
 <div aria-hidden="true" id="dnSiteLandscape">
