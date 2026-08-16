@@ -1900,7 +1900,7 @@ document.addEventListener('DOMContentLoaded',function(){
     }
   }
   if(close) close.addEventListener('click',closeFallback);
-  if(bg) bg.addEventListener('click',closeFallback);
+  /* V97: background click must not close the popup on desktop. */
 });
 </script>
 <script id="dn-framed-portrait-v36-script">
@@ -5188,5 +5188,331 @@ em,
   });
 })();
 </script>
+
+
+<style id="dn-v97-bg-footer-zoom-fix">
+/* =========================================================
+   V97 / MOBILE BACKGROUND
+   Keep a substantially larger painted area above and below
+   the visual viewport. This prevents Safari/Chrome mobile UI
+   resizing + the downward parallax from exposing a top strip.
+   ========================================================= */
+@media screen and (max-width:767px) and (pointer:coarse){
+  html,
+  body{
+    background:#d8c7ae !important;
+  }
+
+  #dnSiteLandscape{
+    left:-56px !important;
+    right:-56px !important;
+    top:-460px !important;
+    bottom:-500px !important;
+    width:auto !important;
+    height:auto !important;
+    min-height:0 !important;
+    max-width:none !important;
+    overflow:hidden !important;
+  }
+
+  #dnSiteLandscape .dn-site-landscape__fill{
+    inset:-14px !important;
+    width:calc(100% + 28px) !important;
+    height:calc(100% + 28px) !important;
+    min-width:calc(100% + 28px) !important;
+    min-height:calc(100% + 28px) !important;
+    max-width:none !important;
+    max-height:none !important;
+    object-fit:cover !important;
+    object-position:50% 47% !important;
+    transform:scale(1.065) !important;
+    transform-origin:center center !important;
+  }
+}
+
+@media screen and (max-width:430px) and (pointer:coarse){
+  #dnSiteLandscape{
+    left:-64px !important;
+    right:-64px !important;
+    top:-500px !important;
+    bottom:-540px !important;
+  }
+
+  #dnSiteLandscape .dn-site-landscape__fill{
+    inset:-18px !important;
+    width:calc(100% + 36px) !important;
+    height:calc(100% + 36px) !important;
+    min-width:calc(100% + 36px) !important;
+    min-height:calc(100% + 36px) !important;
+    transform:scale(1.075) !important;
+  }
+}
+
+/* =========================================================
+   V97 / FOOTER AT DESKTOP ZOOM
+   At 150–250% browser zoom Tilda gets an intermediate CSS
+   viewport and the original absolute coordinates stop lining
+   up. Fine-pointer media query separates this from real phones.
+   ========================================================= */
+@media screen and (max-width:1320px) and (pointer:fine){
+  #rec2402456571 .t396__artboard,
+  #rec2402456571 .t396__filter,
+  #rec2402456571 .t396__carrier{
+    height:clamp(245px,28vw,330px) !important;
+    min-height:245px !important;
+  }
+
+  #rec2402456571 .tn-elem[data-elem-id="1782066480340"]{
+    display:block !important;
+    position:absolute !important;
+    top:clamp(48px,6vw,72px) !important;
+    left:50% !important;
+    right:auto !important;
+    width:min(90vw,720px) !important;
+    height:auto !important;
+    margin:0 !important;
+    transform:translateX(-50%) !important;
+    opacity:1 !important;
+    visibility:visible !important;
+    text-align:center !important;
+    animation:none !important;
+  }
+
+  #rec2402456571 .tn-elem[data-elem-id="1782066480340"] .tn-atom{
+    display:block !important;
+    width:100% !important;
+    height:auto !important;
+    margin:0 !important;
+    transform:none !important;
+    white-space:nowrap !important;
+    text-align:center !important;
+    font-size:clamp(14px,1.55vw,20px) !important;
+    line-height:1.25 !important;
+  }
+
+  #rec2402456571 .tn-elem[data-elem-id="1782066511935000001"]{
+    display:block !important;
+    position:absolute !important;
+    top:clamp(88px,10vw,120px) !important;
+    left:50% !important;
+    right:auto !important;
+    width:min(92vw,900px) !important;
+    height:auto !important;
+    margin:0 !important;
+    transform:translateX(-50%) !important;
+    opacity:1 !important;
+    visibility:visible !important;
+    text-align:center !important;
+    animation:none !important;
+  }
+
+  #rec2402456571 .tn-elem[data-elem-id="1782066511935000001"] .tn-atom{
+    display:block !important;
+    width:100% !important;
+    height:auto !important;
+    margin:0 !important;
+    transform:none !important;
+    white-space:nowrap !important;
+    text-align:center !important;
+    font-size:clamp(50px,7vw,88px) !important;
+    line-height:1.02 !important;
+  }
+}
+
+/* Extra safeguard for very strong desktop zoom where the effective
+   CSS viewport can fall below Tilda's 700px mobile breakpoint. */
+@media screen and (max-width:699px) and (pointer:fine){
+  #rec2402456571 .t396__artboard,
+  #rec2402456571 .t396__filter,
+  #rec2402456571 .t396__carrier{
+    height:235px !important;
+    min-height:235px !important;
+  }
+
+  #rec2402456571 .tn-elem[data-elem-id="1782066480340"]{
+    top:44px !important;
+    width:92vw !important;
+  }
+  #rec2402456571 .tn-elem[data-elem-id="1782066480340"] .tn-atom{
+    font-size:14px !important;
+  }
+
+  #rec2402456571 .tn-elem[data-elem-id="1782066511935000001"]{
+    top:82px !important;
+    width:94vw !important;
+  }
+  #rec2402456571 .tn-elem[data-elem-id="1782066511935000001"] .tn-atom{
+    font-size:clamp(46px,8.2vw,58px) !important;
+  }
+}
+</style>
+
+<script id="dn-v97-desktop-popup-cross-only">
+(function(){
+  function isDesktopPointer(){
+    return !!(window.matchMedia && window.matchMedia('(pointer:fine)').matches);
+  }
+
+  function protectPopup(){
+    var popup=document.querySelector('#rec2402560221 .t-popup');
+    if(!popup || popup.dataset.dnV97Protected==='1') return;
+    popup.dataset.dnV97Protected='1';
+
+    /* Tilda can close from the popup surface itself. Stop only true
+       backdrop clicks; never stop clicks on children/content/cross. */
+    popup.addEventListener('click',function(e){
+      if(!isDesktopPointer()) return;
+
+      var target=e.target;
+      var isBackdrop =
+        target===popup ||
+        (target && target.classList && target.classList.contains('t-popup__bg'));
+
+      if(isBackdrop){
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+      }
+    },true);
+
+    /* The visual backdrop can also be a sibling of .t-popup. */
+    var bg=document.querySelector('#rec2402560221 .t-popup__bg');
+    if(bg && bg.dataset.dnV97Protected!=='1'){
+      bg.dataset.dnV97Protected='1';
+      bg.addEventListener('click',function(e){
+        if(!isDesktopPointer()) return;
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+      },true);
+    }
+  }
+
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',protectPopup,{once:true});
+  }else{
+    protectPopup();
+  }
+
+  /* Tilda initializes popup markup asynchronously, so retry briefly. */
+  var tries=0;
+  var timer=setInterval(function(){
+    protectPopup();
+    tries++;
+    if(tries>40) clearInterval(timer);
+  },250);
+})();
+</script>
+
+
+<style id="dn-v98-footer-zoom-real-fix">
+/*
+  V98 — REAL footer zoom fix.
+
+  Root cause:
+  rec2402456571 is a Tilda Zero Block with data-artboard-upscale="window".
+  At browser zoom Tilda scales the entire .t396 composition after our
+  font-size rules are calculated, so the footer text receives a second scale.
+
+  On desktop/fine-pointer devices we therefore do NOT use the scaled Tilda
+  footer composition at all. We render the same footer directly on the record,
+  outside the T396 scaling system.
+*/
+@media screen and (pointer:fine){
+  #rec2402456571{
+    position:relative !important;
+    display:block !important;
+    width:100% !important;
+    height:clamp(260px,19.7vw,378px) !important;
+    min-height:260px !important;
+    overflow:hidden !important;
+    background:#5c463b !important;
+  }
+
+  /* Completely remove Tilda's zoom-scaled footer artboard on desktop. */
+  #rec2402456571 > .t396{
+    display:none !important;
+  }
+
+  #rec2402456571::before,
+  #rec2402456571::after{
+    position:absolute !important;
+    left:50% !important;
+    width:100% !important;
+    margin:0 !important;
+    padding:0 4vw !important;
+    box-sizing:border-box !important;
+    transform:translateX(-50%) !important;
+    text-align:center !important;
+    color:#faf6ef !important;
+    pointer-events:none !important;
+    z-index:2 !important;
+  }
+
+  /* "ДО ВСТРЕЧИ!   С ЛЮБОВЬЮ,".
+     vw sizing cancels browser zoom: as zoom rises, CSS viewport width falls. */
+  #rec2402456571::before{
+    content:"ДО ВСТРЕЧИ!   С ЛЮБОВЬЮ," !important;
+    top:23% !important;
+    font-family:'Lora',Georgia,serif !important;
+    font-size:clamp(14px,1.05vw,20px) !important;
+    line-height:1.2 !important;
+    font-weight:300 !important;
+    letter-spacing:0 !important;
+    white-space:nowrap !important;
+  }
+
+  /* Keep the actual footer wording already present in this version. */
+  #rec2402456571::after{
+    content:"Дени и Нади" !important;
+    top:35% !important;
+    font-family:var(--t-headline-font,Arial),serif !important;
+    font-size:clamp(54px,6vw,115px) !important;
+    line-height:.98 !important;
+    font-weight:700 !important;
+    white-space:nowrap !important;
+  }
+}
+
+/* At very strong desktop zoom allow a touch more compactness while
+   preserving the same visual proportions. */
+@media screen and (max-width:900px) and (pointer:fine){
+  #rec2402456571{
+    height:clamp(230px,25vw,285px) !important;
+    min-height:230px !important;
+  }
+  #rec2402456571::before{
+    top:24% !important;
+    font-size:clamp(13px,1.45vw,16px) !important;
+  }
+  #rec2402456571::after{
+    top:37% !important;
+    font-size:clamp(48px,7.5vw,68px) !important;
+  }
+}
+</style>
+
+
+<style id="dn-v99-footer-brown-background">
+/*
+  V99 — restore the original brown footer background.
+  The global site-background rule has higher specificity and was forcing
+  all normal Tilda records transparent, including the footer.
+*/
+html body #allrecords > #rec2402456571,
+html body #allrecords > #rec2402456571.r,
+#allrecords > #rec2402456571.t-rec{
+  background-color:#5c463b !important;
+  background-image:none !important;
+}
+
+/* Ensure the independent V98 desktop footer keeps the same brown field
+   through all desktop zoom levels. */
+@media screen and (pointer:fine){
+  html body #allrecords > #rec2402456571{
+    background:#5c463b !important;
+  }
+}
+</style>
 
 </body> </html>
